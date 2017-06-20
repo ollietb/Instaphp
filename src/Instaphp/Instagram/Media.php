@@ -45,6 +45,8 @@ namespace Instaphp\Instagram;
 class Media extends Instagram
 {
 	/**
+	 * @deprecated
+	 *
 	 * Gets current popular media
 	 * @param array $params Parameters to pass to API ('count' is the only known 
 	 *                      parameters supported)
@@ -64,6 +66,17 @@ class Media extends Instagram
 	public function Info($media_id, array $params = [])
 	{
 		return $this->Get($this->formatPath('/media/%s', $media_id), $params);
+	}
+
+	/**
+	 * Gets info about a particular media item by its shortcode
+	 * @param string $shortcode The shortcode to fetch
+	 * @param array $params Parameters to pass to API
+	 * @return Response
+	 */
+	public function Shortcode($shortcode, array $params = [])
+	{
+		return $this->Get($this->formatPath('/media/shortcode/%s', $shortcode), $params);
 	}
 	
 	/**

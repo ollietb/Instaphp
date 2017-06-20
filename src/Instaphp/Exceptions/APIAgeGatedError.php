@@ -1,5 +1,6 @@
 <?php
-/* 
+
+/**
  * The MIT License (MIT)
  * Copyright © 2013 Randy Sesser <randy@instaphp.com>
  * 
@@ -23,19 +24,20 @@
  * 
  * @author Randy Sesser <randy@instaphp.com>
  * @filesource
- * @package Instaphp2
  */
 
+namespace Instaphp\Exceptions;
+
 /**
+ * APIAgeGatedError
+ * 
+ * Exception thrown when user cannot view some resource due to unclear reasons
+ *
  * @author Randy Sesser <randy@instaphp.com>
+ * @license http://instaphp.mit-license.org MIT License 
+ * @package Instaphp
+ * @subpackage Exceptions
+ * @version 2.0-dev
  */
-define('TEST_ROOT', dirname(__DIR__) . '/tests');
-define('TEST_ACCESS_TOKEN', '');
-define('TEST_CLIENT_ID', '');
-define('TEST_CLIENT_SECRET', '');
-define('TEST_REDIRECT_URI', 'http://test.com/redirect');
-define('TEST_MEDIA_ID', '');
-define('TEST_MEDIA_SHORTCODE', '');
-define('TEST_COMMENTS', false);
-define('TEST_LIKES', false);
-include_once dirname(__DIR__) . '/vendor/autoload.php';
+class APIAgeGatedError extends InstagramException { }
+
