@@ -28,6 +28,8 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Message\Request;
 use Instaphp\Exceptions\InstagramException;
 use Instaphp\Exceptions\InstaphpException;
+use Instaphp\Exceptions\OAuthParameterException;
+use Instaphp\Instagram\Response;
 
 /**
  * Users API.
@@ -43,38 +45,32 @@ class Users extends Instagram
      * Authorize a user and set the access_token and user.
      *
      * @param string $code
-     *
      * @return bool Returns true on success, false otherwise
+     * @throws InstagramException
+     * @throws InstaphpException
      */
     public function Authorize($code)
     {
         try {
-            $response = $this->http->Post($this->buildPath('/oauth/access_token', false), [
-                'body' => [
-                    'client_id'     => $this->config['client_id'],
-                    'client_secret' => $this->config['client_secret'],
-                    'redirect_uri'  => $this->config['redirect_uri'],
-                    'grant_type'    => 'authorization_code',
-                    'code'          => $code,
-                    ],
-            ]);
-        } catch (RequestException $e) {
-            throw $e;
+
+            $response = $this->post('/oauth/access_token',
+              [
+                'client_id'     => $this->config['client_id'],
+                'client_secret' => $this->config['client_secret'],
+                'redirect_uri'  => $this->config['redirect_uri'],
+                'grant_type'    => 'authorization_code',
+                'code'          => $code,
+            ], [], false);
         } catch (\Exception $e) {
             // Wrap exception to conform to the Interface
             throw new InstaphpException($e->getMessage(), $e->getCode(), $e);
         }
-        if ($response->getStatusCode() == 200) {
-            $res = new Response($response);
-            $this->SetAccessToken($res->access_token);
-            $this->user = $res->user;
-
+        if ($response->getResponse()->getStatusCode() == 200) {
+            $this->SetAccessToken($response->access_token);
+            $this->user = $response->user;
             return true;
         }
-            // This should throw an exception
-            $response = $this->parseResponse($response);
-        throw new InstagramException($response->getReasonPhrase(), $response->getStatusCode(), $response);
-        return false;
+        throw new InstagramException($response->getResponse()->getReasonPhrase(), $response->getResponse()->getStatusCode(), $response);
     }
 
     /**
@@ -119,14 +115,14 @@ class Users extends Instagram
      *
      * @param array $params Parameters to pass to the API
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return \Instaphp\Instagram\Response
      */
     public function Self(array $params = [])
     {
         if (empty($this->access_token)) {
-            throw new \Instaphp\Exceptions\OAuthParameterException('A valid access_token is required to call this endpoint');
+            throw new OAuthParameterException('A valid access_token is required to call this endpoint');
         }
 
         return $this->Get('/users/self/', $params);
@@ -138,14 +134,14 @@ class Users extends Instagram
      *
      * @param array $params Parameters to pass to the API
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return \Instaphp\Instagram\Response
      */
     public function Feed(array $params = [])
     {
         if (empty($this->access_token)) {
-            throw new \Instaphp\Exceptions\OAuthParameterException('A valid access_token is required to call this endpoint');
+            throw new OAuthParameterException('A valid access_token is required to call this endpoint');
         }
 
         return $this->Recent('', $params);
@@ -173,14 +169,14 @@ class Users extends Instagram
      *
      * @param array $params Parameters to pass to the API. Valid parameters are 'count' and 'max_like_id'
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return \Instaphp\Instagram\Response
      */
     public function Liked(array $params = [])
     {
         if (empty($this->access_token)) {
-            throw new \Instaphp\Exceptions\OAuthParameterException('A valid access_token is required to call this endpoint');
+            throw new OAuthParameterException('A valid access_token is required to call this endpoint');
         }
 
         return $this->Get('/users/self/media/liked', $params);
@@ -230,14 +226,14 @@ class Users extends Instagram
     /**
      * List the users who have requested this user's permission to follow.
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return \Instaphp\Instagram\Response
      */
     public function Requests()
     {
         if (empty($this->access_token)) {
-            throw new \Instaphp\Exceptions\OAuthParameterException('A valid access_token is requred to call this endpoint');
+            throw new OAuthParameterException('A valid access_token is requred to call this endpoint');
         }
 
         return $this->Get('/users/self/requested-by');
@@ -248,14 +244,14 @@ class Users extends Instagram
      *
      * @param string $user_id A valid user_id
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return \Instaphp\Instagram\Response
      */
     public function Relationship($user_id)
     {
         if (empty($this->access_token)) {
-            throw new \Instaphp\Exceptions\OAuthParameterException('A valid access_token is requred to call this endpoint');
+            throw new OAuthParameterException('A valid access_token is requred to call this endpoint');
         }
 
         return $this->Get($this->formatPath('/users/%s/relationship', $user_id));
@@ -266,7 +262,7 @@ class Users extends Instagram
      *
      * @param string $user_id A valid user_id
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return \Instaphp\Instagram\Response
      */
@@ -280,7 +276,7 @@ class Users extends Instagram
      *
      * @param string $user_id A valid user_id
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return \Instaphp\Instagram\Response
      */
@@ -294,7 +290,7 @@ class Users extends Instagram
      *
      * @param string $user_id A valid user_id
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return \Instaphp\Instagram\Response
      */
@@ -308,7 +304,7 @@ class Users extends Instagram
      *
      * @param string $user_id A valid user_id
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return \Instaphp\Instagram\Response
      */
@@ -322,7 +318,7 @@ class Users extends Instagram
      *
      * @param string $user_id A valid user_id
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return \Instaphp\Instagram\Response
      */
@@ -336,7 +332,7 @@ class Users extends Instagram
      *
      * @param string $user_id A valid user_id
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return \Instaphp\Instagram\Response
      */
@@ -351,14 +347,14 @@ class Users extends Instagram
      * @param string $user_id A valid user_id
      * @param string $action  Action to perform. One of follow, unfollow, block, unblock, approve, deny
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return \Instaphp\Instagram\Response
      */
     private function setRelationship($user_id, $action)
     {
         if (empty($this->access_token)) {
-            throw new \Instaphp\Exceptions\OAuthParameterException('A valid access_token is requred to call this endpoint');
+            throw new OAuthParameterException('A valid access_token is requred to call this endpoint');
         }
 
         return $this->Post($this->formatPath('/users/%s/relationship', $user_id), ['action' => $action]);

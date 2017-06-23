@@ -24,6 +24,8 @@
 
 namespace Instaphp\Instagram;
 
+use Instaphp\Exceptions\InvalidArgumentException as InstaphpInvalidArgumentException;
+
 /**
  * Locations API.
  *
@@ -87,7 +89,7 @@ class Locations extends Instagram
     {
         extract($params);
         if ((isset($lat) && !isset($lng)) || (isset($lng) && !isset($lng))) {
-            throw new \Instaphp\Exceptions\InvalidArgumentException("'lat' and 'lng' are mutually inclusive");
+            throw new InstaphpInvalidArgumentException("'lat' and 'lng' are mutually inclusive");
         }
         return $this->Get('/locations/search', $params);
     }

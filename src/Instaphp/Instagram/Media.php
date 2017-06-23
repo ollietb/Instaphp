@@ -24,6 +24,9 @@
 
 namespace Instaphp\Instagram;
 
+use Instaphp\Exceptions\InvalidArgumentException as InstaphpInvalidArgumentException;
+use Instaphp\Exceptions\OAuthParameterException;
+
 /**
  * Media API.
  *
@@ -98,7 +101,7 @@ class Media extends Instagram
     public function Search(array $params = [])
     {
         if ((isset($params['lat']) && !isset($params['lng'])) || (isset($params['lng']) && !isset($params['lat']))) {
-            throw new \Instaphp\Exceptions\InvalidArgumentException('Invalid Arguments: lat and lng are mutually inclusive');
+            throw new InstaphpInvalidArgumentException('Invalid Arguments: lat and lng are mutually inclusive');
         }
         return $this->Get('/media/search', $params);
     }
@@ -108,14 +111,14 @@ class Media extends Instagram
      *
      * @param string $media_id A valid media_id
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return Response
      */
     public function Like($media_id)
     {
         if (empty($this->access_token)) {
-            throw new \Instaphp\Exceptions\OAuthParameterException('A valid access_token is required for this endpoint');
+            throw new OAuthParameterException('A valid access_token is required for this endpoint');
         }
         return $this->Post($this->formatPath('/media/%s/likes', $media_id));
     }
@@ -137,14 +140,14 @@ class Media extends Instagram
      *
      * @param string $media_id A valid media_id
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return Response
      */
     public function Unlike($media_id)
     {
         if (empty($this->access_token)) {
-            throw new \Instaphp\Exceptions\OAuthParameterException('A valid access_token is required for this endpoint');
+            throw new OAuthParameterException('A valid access_token is required for this endpoint');
         }
         return $this->Delete($this->formatPath('/media/%s/likes', $media_id));
     }
@@ -155,14 +158,14 @@ class Media extends Instagram
      * @param string $media_id A valid media_id
      * @param string $comment  The comment to post
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return Response
      */
     public function Comment($media_id, $comment)
     {
         if (empty($this->access_token)) {
-            throw new \Instaphp\Exceptions\OAuthParameterException('A valid access_token is required for this endpoint');
+            throw new OAuthParameterException('A valid access_token is required for this endpoint');
         }
         return $this->Post($this->formatPath('/media/%s/comments', $media_id), ['text' => $comment]);
     }
@@ -185,14 +188,14 @@ class Media extends Instagram
      * @param string $media_id   A valid media_id
      * @param string $comment_id A valid comment_id
      *
-     * @throws \Instaphp\Exceptions\OAuthParameterException
+     * @throws OAuthParameterException
      *
      * @return Response
      */
     public function Uncomment($media_id, $comment_id)
     {
         if (empty($this->access_token)) {
-            throw new \Instaphp\Exceptions\OAuthParameterException('A valid access_token is required for this endpoint');
+            throw new OAuthParameterException('A valid access_token is required for this endpoint');
         }
         return $this->Delete($this->formatPath('/media/%s/comments/%s', $media_id, $comment_id));
     }

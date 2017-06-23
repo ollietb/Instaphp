@@ -83,8 +83,20 @@ class Response
     /** @var int The number of requests you have remaining for this client/access_token */
     public $remaining = 0;
 
+    /**
+     * @var \Psr\Http\Message\ResponseInterface
+     */
+    private $response;
+
+    /**
+     * Response constructor.
+     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param null $uri
+     * @throws \Instaphp\Exceptions\InvalidResponseFormatException
+     */
     public function __construct(PsrResponse $response, $uri = null)
     {
+
         $headers = $response->getHeaders();
         //-- this is a hack on my part and I'm terribly sorry it exists
         //-- but deal with it.
@@ -127,7 +139,8 @@ class Response
         }
 
         if ($error) {
-            throw new InvalidResponseFormatException($error);
+            $body = (string) $response->getBody();
+            throw new InvalidResponseFormatException(sprintf('Error with response: %s (%s)', $error, $body));
         }
 
         // $json = json_decode($this->json, TRUE);
@@ -141,5 +154,13 @@ class Response
         $this->access_token = isset($this->json['access_token']) ? $this->json['access_token'] : null;
         $this->limit        = (isset($this->headers[self::RATE_LIMIT_HEADER])) ? $this->headers[self::RATE_LIMIT_HEADER] : 0;
         $this->remaining    = (isset($this->headers[self::RATE_LIMIT_REMAINING_HEADER])) ? $this->headers[self::RATE_LIMIT_REMAINING_HEADER] : 0;
+        $this->response = $response;
+    }
+
+    /**
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function getResponse() {
+        return $this->response;
     }
 }
