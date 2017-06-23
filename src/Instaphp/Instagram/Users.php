@@ -24,12 +24,9 @@
 
 namespace Instaphp\Instagram;
 
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Message\Request;
 use Instaphp\Exceptions\InstagramException;
 use Instaphp\Exceptions\InstaphpException;
 use Instaphp\Exceptions\OAuthParameterException;
-use Instaphp\Instagram\Response;
 
 /**
  * Users API.

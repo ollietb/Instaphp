@@ -94,7 +94,7 @@ class UsersTest extends InstagramTest
         if (TEST_LIKES === false) {
             $this->markTestSkipped('Likes not tested');
         }
-        $res = $this->object->Liked();
+        $this->object->Liked();
     }
 
     /**

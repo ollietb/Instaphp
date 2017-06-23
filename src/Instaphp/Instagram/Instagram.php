@@ -43,7 +43,6 @@ use Instaphp\Exceptions\OAuthAccessTokenException;
 use Instaphp\Exceptions\OAuthParameterException;
 use Instaphp\Exceptions\OAuthRateLimitException;
 use Instaphp\Http\Plugin\InstaphpPlugin;
-use Instaphp\Instaphp;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
@@ -213,7 +212,7 @@ class Instagram
      */
     protected function post($path, array $params = [], array $headers = [], $addVersion = false)
     {
-        $query = $this->prepare($params, false);
+        $query = $this->prepare($params);
 
         $uri = $this->buildPath($path, $addVersion);
 
@@ -244,7 +243,7 @@ class Instagram
      */
     protected function delete($path, array $params = [], array $headers = [])
     {
-        $query = $this->prepare($params, false);
+        $query = $this->prepare($params);
 
         $uri = $this->buildPath($path);
 
@@ -387,7 +386,7 @@ class Instagram
      *
      * @return array The prepared parameters
      */
-    private function prepare(array $params, $encode = true)
+    private function prepare(array $params)
     {
         $params['client_id'] = $this->client_id;
         if (!empty($this->access_token)) {

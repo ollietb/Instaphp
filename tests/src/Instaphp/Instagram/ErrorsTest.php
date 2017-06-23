@@ -48,7 +48,7 @@ class ErrorsTest extends InstagramTest
 
         $this->object = new Users($this->config);
 
-        $res = $this->object->Recent(5830, ['count' => 5]);
+        $this->object->Recent(5830, ['count' => 5]);
     }
 
     /**
@@ -61,7 +61,7 @@ class ErrorsTest extends InstagramTest
 
         $this->object = new Users($this->config);
 
-        $res = $this->object->Recent(5830, ['count' => 5]);
+        $this->object->Recent(5830, ['count' => 5]);
     }
 
     /**
@@ -84,7 +84,7 @@ class ErrorsTest extends InstagramTest
 
         $this->object = new Users($this->config);
 
-        $res = $this->object->Recent(5830, ['count' => 5]);
+        $this->object->Recent(5830, ['count' => 5]);
     }
 
     /**

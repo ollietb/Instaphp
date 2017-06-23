@@ -122,7 +122,7 @@ class InstaphpTest extends \PHPUnit_Framework_TestCase
      */
     public function test__isset()
     {
-        $media = $this->object->media;
+        $this->object->media;
         $this->assertTrue(isset($this->object->media));
     }
 
@@ -133,7 +133,7 @@ class InstaphpTest extends \PHPUnit_Framework_TestCase
      */
     public function test__unset()
     {
-        $media = $this->object->media;
+        $this->object->media;
         $this->assertTrue(isset($this->object->media));
         unset($this->object->Media);
         $this->assertTrue(!isset($this->object->Media));
