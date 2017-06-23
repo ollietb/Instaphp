@@ -1,10 +1,35 @@
 <?php
 
+/*
+ * The MIT License (MIT)
+ * Copyright © 2013 Randy Sesser <randy@instaphp.com>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the “Software”), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * @author Randy Sesser <randy@instaphp.com>
+ * @filesource
+ */
+
 namespace Instaphp\Instagram;
+
 include_once 'InstagramTest.php';
 
-use GuzzleHttp\Event\CompleteEvent;
-use GuzzleHttp\Stream\Stream;
+use GuzzleHttp\Psr7\Request;
+use Http\Discovery\StreamFactoryDiscovery;
+use Instaphp\Exceptions\InstagramException;
+use Psr\Http\Message\ResponseInterface as Response;
 
 class ErrorsTest extends InstagramTest
 {
@@ -12,30 +37,6 @@ class ErrorsTest extends InstagramTest
      * @var Instagram
      */
     protected $object;
-
-    /**
-     * Swaps Instagram response with new one.
-     * Easiest way of mocking responses without changing Instaphp source code.
-     *
-     * @param int         $statusCode
-     * @param string|null $body
-     * @param string|null $contentType
-     */
-    protected function mockResponse($statusCode, $body = null, $contentType = null)
-    {
-        $this->config['event.after'] = function (CompleteEvent $event) use ($statusCode, $body, $contentType) {
-            $response = $event->getResponse();
-            $response->setStatusCode($statusCode);
-
-            if (!is_null($body)) {
-                $response->setBody(Stream::factory($body));
-            }
-
-            if (!is_null($contentType)) {
-                $response->setHeader('content-type', $contentType);
-            }
-        };
-    }
 
     /**
      * @covers \Instaphp\Instagram\Instagram:parseResponse
@@ -47,7 +48,7 @@ class ErrorsTest extends InstagramTest
 
         $this->object = new Users($this->config);
 
-        $res = $this->object->Recent(5830, ["count" => 5]);
+        $res = $this->object->Recent(5830, ['count' => 5]);
     }
 
     /**
@@ -60,6 +61,55 @@ class ErrorsTest extends InstagramTest
 
         $this->object = new Users($this->config);
 
-        $res = $this->object->Recent(5830, ["count" => 5]);
+        $res = $this->object->Recent(5830, ['count' => 5]);
+    }
+
+    /**
+     * @covers \Instaphp\Instagram\Instagram:parseResponse
+     *
+     * @expectedException        \Instaphp\Exceptions\Exception
+     * @expectedExceptionMessage Test
+     */
+    public function testErrorEvent()
+    {
+        $this->config['event.before'] = function (Request $request) {
+            $request = new Request('GET', 'http://xxxxx');
+
+            return $request;
+        };
+
+        $this->config['event.error'] = function (\Exception $exception) {
+            return new InstagramException('Test');
+        };
+
+        $this->object = new Users($this->config);
+
+        $res = $this->object->Recent(5830, ['count' => 5]);
+    }
+
+    /**
+     * Swaps Instagram response with new one.
+     * Easiest way of mocking responses without changing Instaphp source code.
+     *
+     * @param int         $statusCode
+     * @param string|null $body
+     * @param string|null $contentType
+     */
+    protected function mockResponse($statusCode, $body = null, $contentType = null)
+    {
+        $this->config['event.after'] = function (Response $response) use ($statusCode, $body, $contentType) {
+            $response = $response->withStatus($statusCode);
+
+            if (null !== $body) {
+                $streamFactory = StreamFactoryDiscovery::find();
+                $response      = $response->withBody($streamFactory->createStream($body));
+            }
+
+            if (null !== $contentType) {
+                $response = $response->withHeader('content-type', $contentType);
+            }
+
+            return $response;
+        };
     }
 }
