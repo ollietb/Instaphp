@@ -33,7 +33,7 @@
     },
     "suggest": {
         "php-http/guzzle6-adapter": "Allows you to configure the Guzzle connection options"
-    }
+    },
 	"autoload": {
 		"psr-0": {
 			"Instaphp": "src/"
