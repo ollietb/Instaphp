@@ -1,6 +1,6 @@
 ## Instaphp V2 ##
 
-##Upgrade Notes ##
+## Upgrade Notes ##
 
 The latest version uses HTTPlug so that you can supply your own HTTP client layer. If you want to use Guzzle 6 or whether you have to use Guzzle 5 because other libraries require it, the HTTPlug library provides an abstraction between Instaphp and your own HTTP libary.
 
@@ -14,10 +14,10 @@ BC Breaks:
 
 Unfortunately there are some BC breaks, specifically around the HTTP client options. `http_timeout`, `verify` and `http_connect_timeout` are now deprecated and should be set on the client yourself (see below).
 
-The `event.before`, `event.error` and `event.after` callable functions now take the parameters Psr\Http\Message\RequestInterface, \Exception and Psr\Http\Message\ResponseInterface as arguments instead of the Guzzle equivalents. They need to return the same objects for chaining.
+The `event.before`, `event.error` and `event.after` callable functions now take the parameters `Psr\Http\Message\RequestInterface`, ``\Exception` and `Psr\Http\Message\ResponseInterface` as arguments instead of the Guzzle equivalents. They need to return the same objects for chaining.
 
 
-The example below adds a custom log function to the event.error event
+The example below adds a custom log function to the `event.error` event
 
 ```php
 	$api = new Instaphp\Instaphp([

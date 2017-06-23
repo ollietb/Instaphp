@@ -97,15 +97,22 @@ class ErrorsTest extends InstagramTest
      */
     protected function mockResponse($statusCode, $body = null, $contentType = null)
     {
+        /**
+         * @param \Psr\Http\Message\ResponseInterface $response
+         * @return \Psr\Http\Message\ResponseInterface
+         */
         $this->config['event.after'] = function (Response $response) use ($statusCode, $body, $contentType) {
             $response = $response->withStatus($statusCode);
 
             if (null !== $body) {
                 $streamFactory = StreamFactoryDiscovery::find();
+
+                /** @var Response $response */
                 $response      = $response->withBody($streamFactory->createStream($body));
             }
 
             if (null !== $contentType) {
+                /** @var Response $response */
                 $response = $response->withHeader('content-type', $contentType);
             }
 

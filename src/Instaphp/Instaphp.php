@@ -49,7 +49,6 @@ use Monolog\Logger;
  * @property Instagram\Tags $Tags Tags API
  * @property Instagram\Locations $Locations Locations API
  * @property Instagram\Subscriptions $Subscriptions Subscription API
- * @property Instagram\Direct $Direct Direct share API
  */
 class Instaphp
 {
