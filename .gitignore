@@ -10,3 +10,4 @@ composer.lock
 /tests/instagram_test.log
 /instagram_test.log
 /tests/src/Instaphp/Instagram/instagram_test.log
+.php_cs.cache
